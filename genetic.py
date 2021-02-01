@@ -197,11 +197,30 @@ class GeneticSolver:
         #     print(str(i.gene) + ' ' + str(i.score))
 
     # assmues the input curr_generation is ranked
-    def evolve(self, curr_generation, poplulation_size, elite_size, mutation_rate, pizza_data,):
-        ranked_selected = select(curr_generation, elite_size)
+    def evolve(self):
+        ranked_selected = select(self.population, self.elite_size)
         next_generation = self.breedPopulation(ranked_selected)
         self.mutatePopulation()
-        return next_generation
+
+    # assmues the input curr_generation is ranked
+    def hill_climb(self):
+        # only one individual in each population
+        delivery = self.population[0]
+        gene = delivery.gene
+        old_score = delivery.score
+        position1 = random.randint(0, len(gene) - 1)
+        position2 = random.randint(0, len(gene) - 1)
+        temp = gene[position1]
+        gene[position1] = gene[position2]
+        gene[position2] = temp
+        delivery.score = computeScore(delivery, n2=self.n2, n3=self.n3,
+                                      n4=self.n4, pizza_data=pizza_data)
+        if delivery.score < old_score:
+            # reverse the changes
+            temp = gene[position1]
+            gene[position1] = gene[position2]
+            gene[position2] = temp
+            delivery.score = old_score
 
     # generate the initial generation
     def initialize(self):
@@ -211,8 +230,8 @@ class GeneticSolver:
     def solve(self, number_of_generations):
         for i in range(number_of_generations):
             print('generation ' + str(i))
-            self.population = self.evolve(curr_generation=self.population, poplulation_size=self.poplulation_size,
-                                          elite_size=self.elite_size, mutation_rate=self.mutation_rate, pizza_data=self.pizza_data)
+            # self.evolve()
+            self.hill_climb()
             print(self.population[0].score)
 
     # returns the best individual in the population
@@ -248,7 +267,7 @@ class GeneticSolver:
 
 
 if __name__ == "__main__":
-    intermediate_data = util.parse("./case4")
+    intermediate_data = util.parse("./case3")
     pizza_num = intermediate_data[0]
     num_of_orders = intermediate_data[1]
     pizza_data = intermediate_data[2]
@@ -262,9 +281,9 @@ if __name__ == "__main__":
     n4 = num_of_orders[2]
 
     solver = GeneticSolver(number_of_pizza=pizza_num, n2=n2, n3=n3, n4=n4,
-                           pizza_data=pizza_data, poplulation_size=10, elite_size=1, mutation_rate=0.01)
+                           pizza_data=pizza_data, poplulation_size=1, elite_size=1, mutation_rate=0.01)
 
     solver.initialize()
-    solver.solve(15)
+    solver.solve(100000)
     best = solver.getBest()
     solver.printDelivery(best)
