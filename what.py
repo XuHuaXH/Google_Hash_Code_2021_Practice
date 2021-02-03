@@ -7,17 +7,19 @@
 # scoring: as usual
 
 
-class Wrapper:
+class Parent:
     def __init__(self, a):
         self.a = a
 
+    def fun(self):
+        print('hey')
 
-def fun(wrapper):
-    num = wrapper.a
-    num += 1
+
+class Child(Parent):
+    pass
 
 
 if __name__ == "__main__":
-    w = Wrapper(10)
-    fun(w)
-    print(w.a)
+    c = Child(10)
+    print(c.a)
+    c.fun()
