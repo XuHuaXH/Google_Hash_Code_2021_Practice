@@ -68,7 +68,7 @@ def randomized_greedy_solver(m, n2, n3, n4, pizza_dict, pizza_type_list, choice_
         while temp_dict[i] > 0 and m >= i:
             # makes sure pool_size <= number of pizzas left
             pool_size = min(pool_size, m)
-            score, order = fill_orders(i, pizza_dict, pizza_type_list,
+            score, order = optimize_fill_orders(i, pizza_dict, pizza_type_list,
                                        choice_function, pool_size, rejection_rate, max_depth)
             temp_dict[i] -= 1
             m -= i
@@ -76,3 +76,40 @@ def randomized_greedy_solver(m, n2, n3, n4, pizza_dict, pizza_type_list, choice_
             total_score += score
 
     return total_score, solution
+
+# Optimize greedy
+
+def find_next_pizza(current_ingredients, pizza_dict, pizza_type_list):
+    # Current num of ingredients
+    num = len(current_ingredients)
+    for pizza_type in pizza_type_list:
+        new_ingredients = []
+        new_ingredients.extend(current_ingredients)
+        new_ingredients.extend(pizza_type)
+        new_num = len(set(new_ingredients))
+        if num < new_num:
+            num = new_num
+            chosen_pizza = pizza_type
+    return chosen_pizza
+
+def optimize_fill_orders(order_size, pizza_dict, pizza_type_list, choice_function, pool_size, rejection_rate, max_depth):
+    order = []
+    num_of_ingredients = 0
+    current_ingredients = []
+    ingredients_union = []
+
+    while len(order) < order_size:
+        chosen_pizza = find_next_pizza(current_ingredients, pizza_dict, pizza_type_list)
+        ingredients_union.extend(chosen_pizza)
+        temp_list = pizza_dict[chosen_pizza]
+        order.append(temp_list[len(temp_list) - 1])
+
+        # remove the data related to the pizza chosen
+        temp_list.pop(len(temp_list) - 1)
+        if len(temp_list) == 0:
+            pizza_dict.pop(chosen_pizza)
+            pizza_type_list.remove(chosen_pizza)
+
+    num_of_ingredients = len(set(ingredients_union))
+    single_order_score = math.pow(num_of_ingredients, 2)
+    return single_order_score, order
