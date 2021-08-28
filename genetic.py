@@ -40,22 +40,19 @@ def computeScore(delivery, n2, n3, n4, pizza_data):
             total_score += orderScore(order, pizza_data)
             index += i
             dict[i] -= 1
-    # print('the score of the order ' + str(gene) + ' is ' + str(total_score))
     return total_score
 
 
 # randomly generate a Delivery
 def generateDelivery(index_list):
     gene = random.sample(index_list, len(index_list))
-    # print(gene)
     return Delivery(gene)
 
 
-# the best elite_size many individuals are selected directly
+# The best elite_size many individuals are selected directly
 # for the rest in the population, each one is selected with
 # probability based on its score
 def select(ranked_population, elite_size):
-    # print('enter select')
     roulette_wheel = []
     scores = [i.score for i in ranked_population]
     cumulative_sum = 0
@@ -63,7 +60,7 @@ def select(ranked_population, elite_size):
         cumulative_sum += scores[i]
         roulette_wheel.append(cumulative_sum)
 
-    # the ith individual in the population will be selected
+    # The ith individual in the population will be selected
     # if the number drawn is in [roulette_wheel[i - 1], roulette_wheel[i])
     selected = []
 
@@ -78,56 +75,34 @@ def select(ranked_population, elite_size):
                 break
 
     selected.sort(key=(lambda x: x.score), reverse=True)
-    # for i in selected:
-    #     print('selected:')
-    #     print(i.gene)
-    # print('exit select')
     return selected
 
 
 def breed(parent1, parent2):
-    # print('enter breed')
     gene1 = parent1.gene
     gene2 = parent2.gene
-    # print('gene1 is  ' + str(gene1))
-    # print('gene2 is  ' + str(gene2))
     cut1 = random.randint(0, len(gene1))
     cut2 = random.randint(0, len(gene1))
-    # print('generating cuts')
     # makes sure cut1 != cut2
     while cut1 == cut2:
         cut2 = random.randint(0, len(gene1))
 
     cut_start = min(cut1, cut2)
     cut_end = max(cut1, cut2)
-    # print('cuts generated')
 
     child_gene = []
     parent2_index = 0
     child1 = gene1[cut_start: cut_end + 1]
-    # print('len(gene1) is  ' + str(len(gene1)))
-    # print('cut start is  ' + str(cut_start))
-    # print('cut end is  ' + str(cut_end))
-    # print('child1 is  ' + str(child1))
-    # print('parent2 is  ' + str(parent2.gene))
     while len(child_gene) < len(gene1):
-        # print('parent2 index is  ' + str(parent2_index))
-        # print('len(gene2) is  ' + str(len(gene2)))
         if len(child_gene) == cut_start:
-            # print('appending child1')
             child_gene += child1
         else:
             curr = gene2[parent2_index]
-            # print('adding from parent 2')
             parent2_index += 1
             if curr not in child1:
                 child_gene.append(curr)
 
-    # print('constructing child')
     child = Delivery(child_gene)
-    # print('child is')
-    # print(child.gene)
-    # print('exit breed')
     return child
 
 
@@ -164,9 +139,6 @@ class GeneticSolver:
                 population.append(delivery)
 
         population.sort(key=(lambda x: x.score), reverse=True)
-        # print('the generated population is')
-        # for i in population:
-        #     print(str(i.gene) + ' ' + str(i.score))
         return population
 
     # elite_size of ranked_selected goes directly into the
@@ -183,7 +155,6 @@ class GeneticSolver:
                                        n3=self.n3, n4=self.n4, pizza_data=self.pizza_data)
             if child.score > 0:
                 next_population.append(child)
-        # next_population.sort(key=(lambda x: x.score), reverse=True)
         return next_population
 
     def mutate(self, delivery, number_of_mutations):
@@ -201,7 +172,6 @@ class GeneticSolver:
         return new_delivery
 
     def mutatePopulation(self, next_generation):
-        # print('enter mutate population')
         # only mutate those non-elites
         for i in range(self.elite_size, len(next_generation)):
             draw = random.random()
@@ -214,18 +184,14 @@ class GeneticSolver:
         # rank the entire poplulation
         next_generation.sort(key=(lambda x: x.score), reverse=True)
         return next_generation
-        # print('exit mutate population')
-        # print('this generation is')
-        # for i in self.population:
-        #     print(str(i.gene) + ' ' + str(i.score))
 
-    # assmues the input curr_generation is ranked
+    # assumes the input curr_generation is ranked
     def evolve(self):
         ranked_selected = select(self.population, self.elite_size)
         next_generation = self.breedPopulation(ranked_selected)
         self.population = self.mutatePopulation(next_generation)
 
-    # assmues the input curr_generation is ranked
+    # assumes the input curr_generation is ranked
     def steepest_ascent_hill_climb(self, pool_size):
         # only one individual in each population
         delivery = self.population[0]
@@ -282,7 +248,6 @@ class GeneticSolver:
                                           n3=self.n3, n4=self.n4, pizza_data=self.pizza_data)
             print('the solution is')
             print(solution.gene)
-            # self.printDelivery(solution)
             print('the score for the loaded solution is ' + str(solution.score))
             return solution
 

@@ -69,7 +69,7 @@ def randomized_greedy_solver(m, n2, n3, n4, pizza_dict, pizza_type_list, choice_
             # makes sure pool_size <= number of pizzas left
             pool_size = min(pool_size, m)
             score, order = optimize_fill_orders(i, pizza_dict, pizza_type_list,
-                                       choice_function, pool_size, rejection_rate, max_depth)
+                                                choice_function, pool_size, rejection_rate, max_depth)
             temp_dict[i] -= 1
             m -= i
             solution.append(order)
@@ -77,8 +77,8 @@ def randomized_greedy_solver(m, n2, n3, n4, pizza_dict, pizza_type_list, choice_
 
     return total_score, solution
 
-# Optimize greedy
 
+# Optimize greedy
 def find_next_pizza(current_ingredients, pizza_dict, pizza_type_list):
     # Current num of ingredients
     num = len(current_ingredients)
@@ -91,6 +91,7 @@ def find_next_pizza(current_ingredients, pizza_dict, pizza_type_list):
             num = new_num
             chosen_pizza = pizza_type
     return chosen_pizza
+
 
 def optimize_fill_orders(order_size, pizza_dict, pizza_type_list, choice_function, pool_size, rejection_rate, max_depth):
     order = []
